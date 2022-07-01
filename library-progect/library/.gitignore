@@ -1,0 +1,4 @@
+node_modules
+store/*.json
+src/public/books/imgs
+.env

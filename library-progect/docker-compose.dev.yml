@@ -1,0 +1,45 @@
+services:
+  store:
+    image: redis
+  mongoDB:
+    image: mongo
+    restart: always
+    expose:
+      - 27017
+    ports:
+      - 27018:27017
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${DB_USERNAME:-root}
+      - MONGO_INITDB_ROOT_PASSWORD=${DB_PASSWORD:-pass}
+      - MONGO_INITDB_DATABASE=${DB_NAME:-books}
+  counter:
+    build: ./counter
+    container_name: book_counter
+    environment:
+      - REDIS_URL=redis://store:6379
+    depends_on:
+      - mongoDB
+      - store
+  library:
+    build:
+      context: ./library
+      dockerfile: Dockerfile.dev
+    ports:
+      - 80:3000
+    container_name: book_library
+    environment:
+      - PORT=3000
+      - ORIGIN=http://localhost
+      - COUNTER_ORIGIN=counter:3001
+      - DB_USERNAME=${DB_USERNAME:-root}
+      - DB_PASSWORD=${DB_PASSWORD:-pass}
+      - DB_NAME=${DB_NAME:-books}
+      - DB_HOST=mongodb://mongoDB:27017
+      - REDIS_URL=redis://store:6379
+      - USER_PASS_SECRET=userpass
+    volumes:
+      - ./library:/app
+    depends_on:
+      - mongoDB
+      - store
+      - counter

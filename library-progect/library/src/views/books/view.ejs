@@ -1,0 +1,80 @@
+<%- include('../partials/layout-start.ejs'), { title: title } %>
+<div class="container">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/">Home</a></li>
+            <li class="breadcrumb-item"><a href="/books/">Books</a></li>
+            <li class="breadcrumb-item active" aria-current="page"><%= book.title %></li>
+        </ol>
+    </nav>
+    <div class="card">
+        <img src="/public/books/imgs/<%= book.fileCover %>" class="card-img-top" alt="<%= book.title %>">
+        <div class="card-body">
+            <div class="d-flex align-items-end mb-3">
+                <p class="mb-0">Название:</p>
+                <h5 class="card-title mb-0 ms-1"><%= book.title %></h5>
+            </div>
+            <p class="card-text">Описание: <%= book.description %></p>
+            <p class="card-text">Избранное: <% if (book.favorite) { %> Да <% } else { %> 'Нет' <% } %></p>
+            <p class="card-text">Просмотренно: <%= countVisible || 0 %> раз</p>
+            <div class="d-flex justify-content-end">
+                <a href="/books/edit/<%= book.id %>" class="btn btn-primary"><i class="bi bi-pencil-square"></i></a>
+                <form action="/books/delete/<%= book.id %>" method="post">
+                    <button class="btn btn-danger"><i class="bi bi-trash"></i></button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div aria-live="polite" aria-atomic="true" class="position-relative bd-example-toasts">
+        <div class="toast-container p-3" id="toastPlacement"></div>
+    </div>
+    <div class="form-comment-wrap">
+        <div class="mb-3">
+            <label for="name" class="form-label">Имя</label>
+            <input type="text" class="form-control" id="name">
+        </div>
+        <div class="mb-3">
+            <label for="text-comm" class="form-label">Оставить коментарий</label>
+            <textarea class="form-control" id="text-comm" rows="3"></textarea>
+        </div>
+        <button id="submit-comm" type="submit" class="btn btn-primary">Отправить</button>
+    </div>
+</div>
+
+<script>
+  const roomName = location.pathname.split('/').pop()
+  const socket = io.connect('/', {query: `roomName=${roomName}`})
+  const inputName = document.getElementById('name')
+  const inputComm = document.getElementById('text-comm')
+  const btn = document.getElementById('submit-comm')
+  const toastWrap = document.getElementById('toastPlacement')
+
+  const addMsg = msg => {
+    const toast = `
+        <div class="toast show">
+                <div class="toast-header">
+                    <strong class="me-auto">Username</strong>
+                    <small>${msg.username}</small>
+                </div>
+                <div class="toast-body">
+                    ${msg.text}
+                </div>
+            </div>
+    `
+    toastWrap.insertAdjacentHTML('beforeend', toast)
+  }
+
+  btn.addEventListener('click', () => {
+    socket.emit('message', {
+      username: inputName.value,
+      text: inputComm.value,
+    })
+    inputName.value = ''
+    inputComm.value = ''
+  })
+
+  socket.on('message', (msg) => {
+    addMsg(msg)
+  });
+</script>
+<%- include('../partials/layout-end.ejs') %>
