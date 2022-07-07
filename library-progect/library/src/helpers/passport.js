@@ -1,7 +1,7 @@
 const passport = require('passport')
 const LocalStrategy = require('passport-local').Strategy
 const userModel = require('../models/user')
-const getHash = require('./crypto')
+const { getHash, compare } = require('./crypto')
 
 /**
  * @param {String} login
@@ -12,7 +12,7 @@ const verify = async (login, pass, done) => {
   try {
     const user = await userModel.findOne({ login })
     if (!user) return done(null, false)
-    if (user.password !== getHash(pass)) return done(null, false)
+    if (compare(pass, user.password)) return done(null, false)
     return done(null, user)
   } catch (e) {
     return done(e)

@@ -1,10 +1,14 @@
-const { createHmac } = require('node:crypto')
+const bcrypt = require('bcrypt')
 
-const secret = process.env.USER_PASS_SECRET || 'userpass'
+const saltRounds = 10
 const getHash = (pass) => {
-  return createHmac('sha256', secret)
-    .update(pass)
-    .digest('hex')
+  return bcrypt.hashSync(pass, saltRounds)
+}
+const compare = (pass, hash) => {
+  return bcrypt.compareSync(pass, hash)
 }
 
-module.exports = getHash
+module.exports = {
+  getHash,
+  compare
+}

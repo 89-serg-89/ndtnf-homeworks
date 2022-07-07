@@ -1,8 +1,11 @@
-const express = require('express')
-const router = express.Router()
-const userModel = require('../../models/user')
-const { auth } = require('../../helpers/passport')
-const getHash = require('../../helpers/crypto')
+import { Router } from 'express'
+// @ts-ignore
+import { auth } from '../../helpers/passport'
+// @ts-ignore
+import { getHash } from '../../helpers/crypto'
+import { container } from '../../configs/inversity.config'
+import { UserService } from '../../modules/user/user.service'
+const router = Router()
 
 router.post('/login', auth, (req, res) => {
   try {
@@ -18,18 +21,18 @@ router.post('/login', auth, (req, res) => {
 
 router.post('/signup', async (req, res) => {
   try {
-    const candidate = await userModel.find({ login: req.body.login })
+    const userService = container.get(UserService)
+    const candidate = await userService.getUser({ login: req.body.login })
     if (candidate.length) {
       res.status(200)
       return res.json({
         error: 'Логин занят'
       })
     }
-    const user = new userModel({
+    const user = await userService.createUser({
       ...req.body,
       password: getHash(req.body.password)
     })
-    await user.save()
     res.status(201)
     res.json(user)
   } catch (e) {

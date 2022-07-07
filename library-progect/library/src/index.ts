@@ -1,21 +1,22 @@
-require('dotenv').config()
-const path = require('path')
-const http = require('http')
-const express = require('express')
-const bodyParser = require('body-parser')
-const mongoose = require('mongoose')
-const cookieParser = require('cookie-parser')
-const session = require('express-session')
-const RedisStore = require('connect-redis')(session)
-const axios = require('axios')
+import 'dotenv/config'
+import path from 'path'
+import http from 'http'
+import express from 'express'
+import bodyParser from 'body-parser'
+import mongoose from 'mongoose'
+import cookieParser from 'cookie-parser'
+import axios from 'axios'
+import 'reflect-metadata'
 
-const { passport } = require('./helpers/passport')
-const socketConnect = require('./helpers/socket')
-const redisClient = require('./helpers/redis')
+// @ts-ignore
+import { passport } from './helpers/passport'
+// @ts-ignore
+import socketConnect from './helpers/socket'
+// @ts-ignore
+import redisClient from './helpers/redis'
 
 const app = express()
 const server = http.createServer(app)
-redisClient.connect()
 socketConnect(server)
 
 const userApiRouter = require('./routes/api/user')
@@ -25,28 +26,20 @@ const booksRouter = require('./routes/books')
 const usersRouter = require('./routes/users')
 const errorsRouter = require('./routes/errors')
 
+const sessionMiddleware = require('./middleware/session')
 const errorMiddleware = require('./middleware/error')
 
 app.set('views', path.join(__dirname, '/views'))
 app.set('view engine', 'ejs')
 
 app.use(cookieParser())
-
-app.use(
-  session({
-    store: new RedisStore({ client: redisClient }),
-    saveUninitialized: false,
-    secret: 'netology course',
-    resave: true,
-    cookie: { secure: false }
-  })
-)
+app.use(sessionMiddleware)
 
 app.use(passport.initialize())
 app.use(passport.session())
 
 app.use(bodyParser.json())
-app.use(bodyParser.urlencoded({ extended: true }))
+app.use(bodyParser.urlencoded({extended: true}))
 app.use(express.json())
 app.use('/public', express.static(path.join(__dirname, '/public')))
 app.use('/', errorsRouter)
@@ -58,24 +51,24 @@ app.use('/api/books', booksApiRouter)
 
 app.use(errorMiddleware)
 
-axios.default.withCredentials = true
+axios.defaults.withCredentials = true
 
 const port = process.env.PORT || 3000
 
 const init = async () => {
   try {
+    // mongoose.set('bufferCommands', false)
     await mongoose.connect(process.env.DB_HOST || 'mongodb://localhost:27017/', {
-      user: process.env.DB_USERNAME || 'root',
-      pass: process.env.DB_PASSWORD || 'pass',
-      dbName: process.env.DB_NAME || 'books',
-      useNewUrlParser: true,
-      useUnifiedTopology: true
+      user: process.env.DB_USERNAME || '',
+      pass: process.env.DB_PASSWORD || '',
+      dbName: process.env.DB_NAME || 'books'
     })
+    console.log(mongoose.connection.readyState)
     console.log('Соединение с БД успешно')
     server.listen(port, () => {
       console.log(`Library app listening on port ${port}`)
     })
-  } catch ( e ) {
+  } catch (e) {
     console.warn(e.toString())
   }
 }

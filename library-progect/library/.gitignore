@@ -1,4 +1,6 @@
 node_modules
 store/*.json
 src/public/books/imgs
+src/**/*.js
 .env
+.eslintcache
