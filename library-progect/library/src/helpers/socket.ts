@@ -1,8 +1,9 @@
-const { Server } = require('socket.io')
-let roomName
-let socket
+import { Server, Socket } from 'socket.io'
 
-const connect = (server) => {
+let roomName: string | string[]
+let socket: Socket
+
+const connect = <Type>(server: Type) => {
   const io = new Server(server)
   io.on('connection', socketIO => {
     socket = socketIO
@@ -13,10 +14,9 @@ const connect = (server) => {
   })
 }
 
-const onMessage = async (msg) => {
-  msg.type = `room: ${roomName}`
+const onMessage = (msg: object): void => {
   socket.to(roomName).emit('message', msg)
   socket.emit('message', msg)
 }
 
-module.exports = connect
+export = connect

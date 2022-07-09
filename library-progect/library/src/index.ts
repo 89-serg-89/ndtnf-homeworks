@@ -8,12 +8,8 @@ import cookieParser from 'cookie-parser'
 import axios from 'axios'
 import 'reflect-metadata'
 
-// @ts-ignore
 import { passport } from './helpers/passport'
-// @ts-ignore
 import socketConnect from './helpers/socket'
-// @ts-ignore
-import redisClient from './helpers/redis'
 
 const app = express()
 const server = http.createServer(app)
@@ -26,8 +22,8 @@ const booksRouter = require('./routes/books')
 const usersRouter = require('./routes/users')
 const errorsRouter = require('./routes/errors')
 
-const sessionMiddleware = require('./middleware/session')
-const errorMiddleware = require('./middleware/error')
+import sessionMiddleware from './middleware/session'
+import errorMiddleware from './middleware/error'
 
 app.set('views', path.join(__dirname, '/views'))
 app.set('view engine', 'ejs')

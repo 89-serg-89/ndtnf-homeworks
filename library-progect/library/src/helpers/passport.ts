@@ -1,14 +1,12 @@
-const passport = require('passport')
-const LocalStrategy = require('passport-local').Strategy
-const userModel = require('../models/user')
-const { getHash, compare } = require('./crypto')
+import express from 'express'
+import passport from 'passport'
+import passportLocal from 'passport-local'
+import userModel from '../models/user'
+import { compare } from './crypto'
 
-/**
- * @param {String} login
- * @param {String} pass
- * @param {Function} done
- */
-const verify = async (login, pass, done) => {
+const LocalStrategy = passportLocal.Strategy
+
+const verify = async (login: string, pass: string, done: Function) => {
   try {
     const user = await userModel.findOne({ login })
     if (!user) return done(null, false)
@@ -25,7 +23,7 @@ const options = {
   passReqToCallback: false,
 }
 
-const isAuthenticated = (req, res, next) => {
+const isAuthenticated = (req: express.Request, res: express.Response, next: express.NextFunction) => {
   if (!req.isAuthenticated || !req.isAuthenticated()) {
     if (req.session) {
       req.session.returnTo = req.originalUrl || req.url
@@ -36,7 +34,7 @@ const isAuthenticated = (req, res, next) => {
   next()
 }
 
-const auth = (req, res, next) => {
+const auth = (req: express.Request, res: express.Response, next: express.NextFunction) => {
   passport.authenticate('local', function(err, user, info) {
     if (err) { return next(err) }
     if (!user) {
@@ -71,7 +69,7 @@ passport.deserializeUser( async (id, cb) => {
   }
 })
 
-module.exports = {
+export {
   isAuthenticated,
   auth,
   passport
