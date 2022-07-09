@@ -1,6 +1,5 @@
 node_modules
 dist
-store/*.json
-src/public/books/imgs
+public
 .env
 .eslintcache
