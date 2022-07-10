@@ -1,6 +1,5 @@
 import path from 'path'
 import { Router } from 'express'
-// @ts-ignore
 import fileMiddleware from '../../middleware/file'
 import { BookService } from '../../modules/book/book.service'
 import { container } from '../../configs/inversity.config'
@@ -115,4 +114,4 @@ router.get('/:id/download', async (req, res) => {
   }
 })
 
-module.exports = router
+export = router

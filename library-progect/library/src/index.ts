@@ -15,17 +15,17 @@ const app = express()
 const server = http.createServer(app)
 socketConnect(server)
 
-const userApiRouter = require('./routes/api/user')
-const booksApiRouter = require('./routes/api/books')
-const indexRouter = require('./routes/index')
-const booksRouter = require('./routes/books')
-const usersRouter = require('./routes/users')
-const errorsRouter = require('./routes/errors')
+import userApiRouter from './routes/api/user'
+import booksApiRouter from './routes/api/books'
+import indexRouter from './routes/index'
+import booksRouter from './routes/books'
+import usersRouter from './routes/users'
+import errorsRouter from './routes/errors'
 
 import sessionMiddleware from './middleware/session'
 import errorMiddleware from './middleware/error'
 
-app.set('views', path.join(__dirname, '/views'))
+app.set('views', path.join(__dirname, '..', '/views'))
 app.set('view engine', 'ejs')
 
 app.use(cookieParser())
@@ -53,7 +53,6 @@ const port = process.env.PORT || 3000
 
 const init = async () => {
   try {
-    // mongoose.set('bufferCommands', false)
     await mongoose.connect(process.env.DB_HOST || 'mongodb://localhost:27017/', {
       user: process.env.DB_USERNAME || '',
       pass: process.env.DB_PASSWORD || '',

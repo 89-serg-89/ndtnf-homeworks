@@ -1,7 +1,5 @@
 import { Router } from 'express'
-// @ts-ignore
 import { auth } from '../../helpers/passport'
-// @ts-ignore
 import { getHash } from '../../helpers/crypto'
 import { container } from '../../configs/inversity.config'
 import { UserService } from '../../modules/user/user.service'
@@ -42,4 +40,4 @@ router.post('/signup', async (req, res) => {
   }
 })
 
-module.exports = router
+export = router

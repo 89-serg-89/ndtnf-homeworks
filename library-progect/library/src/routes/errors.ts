@@ -1,5 +1,5 @@
-const express = require('express')
-const router = express.Router()
+import { Router } from 'express'
+const router = Router()
 
 router.get('/404', (req, res) => {
   res.render('error/404', {
@@ -7,4 +7,4 @@ router.get('/404', (req, res) => {
   })
 })
 
-module.exports = router
+export = router

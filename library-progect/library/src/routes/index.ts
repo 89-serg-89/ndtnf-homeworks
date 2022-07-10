@@ -1,15 +1,15 @@
-const express = require('express')
-const router = express.Router()
+import { Router } from 'express'
+const router = Router()
 
 router.get('/', (req, res) => {
   try {
     res.render('index', {
       title: 'Главная'
     })
-  } catch (e) {
+  } catch (e: any) {
     console.log(`Error: ${e}`)
     res.redirect('/404')
   }
 })
 
-module.exports = router
+export = router

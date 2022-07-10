@@ -1,7 +1,7 @@
-const express = require('express')
-const router = express.Router()
-const axios = require('axios').default
-const fileMiddleware = require('../middleware/file')
+import { Router } from 'express'
+const router = Router()
+import axios from 'axios'
+import fileMiddleware from '../middleware/file'
 
 const url_api_books = process.env.ORIGIN + ':' + process.env.PORT + '/api/books/'
 const COUNTER_ORIGIN = process.env.COUNTER_ORIGIN || 'localhost:3001'
@@ -13,7 +13,7 @@ router.get('/create', (req, res) => {
       route: 'create',
       book: {}
     })
-  } catch (e) {
+  } catch (e: any) {
     console.log(`Error: ${e}`)
     res.status(404).redirect('/404')
   }
@@ -31,12 +31,13 @@ router.post(
   ]),
   async (req, res) => {
     try {
+      const files = req.files as { [fieldname: string]: Express.Multer.File[] }
       await axios.post(url_api_books, {
-        fileCover: req?.files?.fileCover?.[0].filename,
+        fileCover: files?.fileCover?.[0].filename,
         ...req.body
       })
       res.redirect('/books')
-    } catch (e) {
+    } catch (e: any) {
       console.log(`Error: ${e}`)
       res.status(404).redirect('/404')
     }
@@ -73,8 +74,9 @@ router.post(
   try {
     const id = req.params.id
     if (!id) res.status(404).redirect('/404')
+    const files = req.files as { [fieldname: string]: Express.Multer.File[] }
     await axios.put(url_api_books + id, {
-      fileCover: req?.files?.fileCover?.[0].filename,
+      fileCover: files?.fileCover?.[0].filename,
       ...req.body
     })
     res.redirect('/books')
@@ -90,7 +92,7 @@ router.post('/delete/:id', async (req, res) => {
     if (!id) res.status(404).redirect('/404')
     await axios.delete(url_api_books + id)
     res.redirect('/books')
-  } catch (e) {
+  } catch (e: any) {
     console.log(`Error: ${e}`)
     res.status(404).redirect('/404')
   }
@@ -98,13 +100,16 @@ router.post('/delete/:id', async (req, res) => {
 
 router.get('/', async (req, res) => {
   try {
+    console.log('get')
+    console.log(url_api_books)
     const response = await axios.get(url_api_books)
+    console.log(response)
     const books = response.data
     res.render('books/index', {
       title: 'Список книг',
       books
     })
-  } catch (e) {
+  } catch (e: any) {
     console.log(`Error: ${e}`)
     res.redirect('/404')
   }
@@ -122,10 +127,10 @@ router.get('/:id', async (req, res) => {
       book,
       countVisible: countVisible?.data?.count
     })
-  } catch (e) {
+  } catch (e: any) {
     console.log(`Error: ${e}`)
     res.redirect('/404')
   }
 })
 
-module.exports = router
+export = router

@@ -1,9 +1,10 @@
-const path = require('path')
-const multer = require('multer')
+import path from 'path'
+import multer, { FileFilterCallback } from 'multer'
+import { Request } from 'express'
 
 const storage = multer.diskStorage({
   destination(req, file, cb) {
-    cb(null, path.join(__dirname, '..', '/public/books/imgs'))
+    cb(null, path.join(__dirname, '../../', '/public/books/imgs'))
   },
   filename(req, file, cb) {
     cb(null, `${new Date().toISOString().replace(/:/g, '-')}-${file.originalname}`)
@@ -12,7 +13,7 @@ const storage = multer.diskStorage({
 
 const allowedTypes = ['image/png', 'image/jpg', 'image/jpeg', 'text/plain', 'application/pdf']
 
-const fileFilter = (req, file, cb) => {
+const fileFilter = (req: Request, file: Express.Multer.File, cb: FileFilterCallback) => {
   if (allowedTypes.includes(file.mimetype)) {
     cb(null, true)
   } else {
@@ -20,6 +21,6 @@ const fileFilter = (req, file, cb) => {
   }
 }
 
-module.exports = multer({
+export = multer({
   storage, fileFilter
 })

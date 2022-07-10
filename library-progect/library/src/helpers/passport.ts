@@ -9,18 +9,18 @@ const LocalStrategy = passportLocal.Strategy
 const verify = async (login: string, pass: string, done: Function) => {
   try {
     const user = await userModel.findOne({ login })
-    if (!user) return done(null, false)
-    if (compare(pass, user.password)) return done(null, false)
-    return done(null, user)
+    if (!user) {
+      done(null, false)
+      return
+    }
+    if (compare(pass, user.password)) {
+      done(null, false)
+      return
+    }
+    done(null, user)
   } catch (e) {
-    return done(e)
+    done(e)
   }
-}
-
-const options = {
-  usernameField: 'login',
-  passwordField: 'password',
-  passReqToCallback: false,
 }
 
 const isAuthenticated = (req: express.Request, res: express.Response, next: express.NextFunction) => {
@@ -51,7 +51,11 @@ const auth = (req: express.Request, res: express.Response, next: express.NextFun
 }
 
 //  Добавление стратегии для использования
-passport.use('local', new LocalStrategy(options, verify))
+passport.use('local', new LocalStrategy({
+  usernameField: 'login',
+  passwordField: 'password',
+  passReqToCallback: false
+}, verify))
 
 // Конфигурирование Passport для сохранения пользователя в сессии
 passport.serializeUser((user, cb) => {
@@ -65,7 +69,7 @@ passport.deserializeUser( async (id, cb) => {
     cb(null, user)
   } catch (e) {
     console.log(e)
-    return cb(e)
+    cb(e)
   }
 })
 
