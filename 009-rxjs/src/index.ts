@@ -1,9 +1,30 @@
-import {of, from, timer, range} from 'rxjs';
+import { ajax } from 'rxjs/ajax'
 
-const o = range(0, 10)
+const urlGithub = 'https://api.github.com/search/repositories?q=vue'
+const urlGitlub = 'https://gitlab.com/api/v4/projects?search=nest'
 
-o.subscribe({
-  next: (value: any) => console.log('Next:', value),
-  complete: () => console.log('Complete!'),
-  error: (error) => console.log('Error!', error)
+const github$ = ajax({
+  url: urlGithub,
+  method: 'GET',
+  headers: {
+    'Content-Type': 'application/json'
+  },
 })
+
+const gitlub$ = ajax({
+  url: urlGitlub,
+  method: 'GET',
+  headers: {
+    'Content-Type': 'application/json'
+  },
+})
+
+github$.subscribe(
+  res => console.log(res),
+  err => console.error(err)
+)
+
+gitlub$.subscribe(
+  res => console.log(res),
+  err => console.error(err)
+)
