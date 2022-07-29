@@ -1,7 +1,6 @@
-import { Controller, Get, Post, Put, Delete, Res, Param, Body, HttpStatus } from '@nestjs/common'
+import { Controller, Get, Post, Put, Delete, Res, Param, Body, HttpStatus, HttpException } from '@nestjs/common'
 import { BooksService } from './books.service'
 import { CreateBooksDto } from './dto/create-books.dto'
-import { BooksDocument } from './shemas/books.schema'
 
 @Controller('books')
 export class BooksController {
@@ -11,15 +10,10 @@ export class BooksController {
   async findAll (@Res() res) {
     try {
       const data = await this.booksService.findAll()
-      return res.status(HttpStatus.OK).json({
-        status: 'ok',
-        data
-      })
+      res.status(HttpStatus.OK)
+      return data
     } catch (e) {
-      return res.status(HttpStatus.BAD_REQUEST).json({
-        status: 'error',
-        message: e.message
-      })
+      throw new HttpException(e, HttpStatus.BAD_REQUEST)
     }
   }
 
