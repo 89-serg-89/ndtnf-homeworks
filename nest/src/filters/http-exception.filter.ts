@@ -17,7 +17,9 @@ export class HttpExceptionFilter implements ExceptionFilter {
         code: status,
         timestamp: new Date().toISOString(),
         path: request.url,
-        data: exceptionResponse || 'error'
+        data: (typeof exceptionResponse === 'object'
+          ? exceptionResponse['message']
+          : exceptionResponse) || 'error'
       })
   }
 }

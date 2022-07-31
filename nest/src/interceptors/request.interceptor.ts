@@ -1,6 +1,5 @@
-import { NestInterceptor, ExecutionContext, CallHandler, Injectable, BadGatewayException } from '@nestjs/common'
-import { tap, Observable, throwError } from 'rxjs'
-import { catchError } from 'rxjs/operators'
+import { NestInterceptor, ExecutionContext, CallHandler, Injectable } from '@nestjs/common'
+import { tap, Observable } from 'rxjs'
 
 export interface Response<T> {
   status: string

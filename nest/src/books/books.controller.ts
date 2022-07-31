@@ -1,6 +1,20 @@
-import { Controller, Get, Post, Put, Delete, Res, Param, Body, HttpStatus, HttpException } from '@nestjs/common'
+import {
+  Controller,
+  Get,
+  Post,
+  Put,
+  Delete,
+  Res,
+  Param,
+  Body,
+  HttpStatus,
+  HttpException,
+  UsePipes
+} from '@nestjs/common'
 import { BooksService } from './books.service'
 import { CreateBooksDto } from './dto/create-books.dto'
+import { JoiValidationPipe } from './pipies/joi-validation.pipe'
+import { booksSchema } from './joi_schemas/books.schema'
 
 @Controller('books')
 export class BooksController {
@@ -20,19 +34,14 @@ export class BooksController {
   @Post()
   async create (
     @Res() res,
-    @Body() body: CreateBooksDto
+    @Body(new JoiValidationPipe(booksSchema)) body: CreateBooksDto
   ) {
     try {
       const data = await this.booksService.create(body)
-      return res.status(HttpStatus.CREATED).json({
-        status: 'ok',
-        data
-      })
+      res.status(HttpStatus.CREATED)
+      return data
     } catch (e) {
-      return res.status(HttpStatus.BAD_REQUEST).json({
-        status: 'error',
-        message: e.message
-      })
+      throw new HttpException(e, HttpStatus.BAD_REQUEST)
     }
   }
 
@@ -40,19 +49,14 @@ export class BooksController {
   async update (
     @Res() res,
     @Param('id') id: string,
-    @Body() body: CreateBooksDto
+    @Body(new JoiValidationPipe(booksSchema)) body: CreateBooksDto
   ) {
     try {
       const data = await this.booksService.update(id, body)
-      return res.status(HttpStatus.OK).json({
-        status: 'ok',
-        data
-      })
+      res.status(HttpStatus.OK)
+      return data
     } catch (e) {
-      return res.status(HttpStatus.BAD_REQUEST).json({
-        status: 'error',
-        message: e.message
-      })
+      throw new HttpException(e, HttpStatus.BAD_REQUEST)
     }
   }
 
@@ -63,14 +67,9 @@ export class BooksController {
   ) {
     try {
       await this.booksService.delete(id)
-      return res.status(HttpStatus.OK).json({
-        status: 'ok'
-      })
+      res.status(HttpStatus.OK)
     } catch (e) {
-      return res.status(HttpStatus.BAD_REQUEST).json({
-        status: 'error',
-        message: e.message
-      })
+      throw new HttpException(e, HttpStatus.BAD_REQUEST)
     }
   }
 }
