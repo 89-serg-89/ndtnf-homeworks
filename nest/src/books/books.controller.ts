@@ -8,13 +8,12 @@ import {
   Param,
   Body,
   HttpStatus,
-  HttpException,
-  UsePipes
+  HttpException
 } from '@nestjs/common'
 import { BooksService } from './books.service'
 import { CreateBooksDto } from './dto/create-books.dto'
 import { JoiValidationPipe } from './pipies/joi-validation.pipe'
-import { booksSchema } from './joi_schemas/books.schema'
+import { createSchema } from './joi_schemas/books.schema'
 
 @Controller('books')
 export class BooksController {
@@ -34,7 +33,7 @@ export class BooksController {
   @Post()
   async create (
     @Res() res,
-    @Body(new JoiValidationPipe(booksSchema)) body: CreateBooksDto
+    @Body(new JoiValidationPipe(createSchema)) body: CreateBooksDto
   ) {
     try {
       const data = await this.booksService.create(body)
@@ -49,7 +48,7 @@ export class BooksController {
   async update (
     @Res() res,
     @Param('id') id: string,
-    @Body(new JoiValidationPipe(booksSchema)) body: CreateBooksDto
+    @Body(new JoiValidationPipe(createSchema)) body: CreateBooksDto
   ) {
     try {
       const data = await this.booksService.update(id, body)
