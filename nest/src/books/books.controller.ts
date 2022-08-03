@@ -12,10 +12,10 @@ import {
 } from '@nestjs/common'
 import { BooksService } from './books.service'
 import { CreateBooksDto } from './dto/create-books.dto'
-import { JoiValidationPipe } from './pipies/joi-validation.pipe'
-import { createSchema } from './joi_schemas/books.schema'
+import { JoiValidationPipe } from '../pipies/joi-validation.pipe'
+import { createSchema } from './joi/create.schema'
 
-@Controller('books')
+@Controller('api/books')
 export class BooksController {
   constructor (private booksService: BooksService) {  }
 
