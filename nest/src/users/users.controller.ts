@@ -1,30 +1,44 @@
-import { Body, Controller, Post, Res } from '@nestjs/common'
-import { SignupDto } from './dto/signup.dto'
+import { Body, Controller, HttpException, HttpStatus, Post, Get, Res, UseGuards, Req } from '@nestjs/common'
 import { JoiValidationPipe } from '../pipies/joi-validation.pipe'
-import { createSchema } from './joi/signup.schema'
+import { createSchema, signInSchema } from './joi/users.schema'
+import { CreateDto, SignInDto } from './dto/users.dto'
+import { UsersService } from './users.service'
+import { AuthService } from '../auth/auth.service'
+import { JwtAuthGuard } from '../auth/guards/access.guard'
 
 @Controller('api/users')
 export class UsersController {
+  constructor (
+    private usersService: UsersService,
+    private authService: AuthService
+  ) {  }
 
   @Post('/signup')
   async signUp (
     @Res() res,
-    @Body(new JoiValidationPipe(createSchema)) body: SignupDto
+    @Body(new JoiValidationPipe(createSchema)) body: CreateDto
   ) {
-    console.log(body)
     try {
-      console.log('signup')
+      await this.usersService.createUser(body)
+      res.status(HttpStatus.CREATED)
     } catch (e) {
-
+      throw new HttpException(e, HttpStatus.BAD_REQUEST)
     }
   }
 
-  @Post()
-  async signIn (@Res() res) {
-    try {
+  @Post('/signin')
+  async signIn (
+    @Res() res,
+    @Body(new JoiValidationPipe(signInSchema)) body: SignInDto
+  ) {
+    const auth = await this.authService.login(body)
+    res.status(HttpStatus.OK)
+    return auth
+  }
 
-    } catch (e) {
-
-    }
+  @UseGuards(JwtAuthGuard)
+  @Get('/profile')
+  async profile (@Req() req, @Res() res) {
+    return req.user
   }
 }
