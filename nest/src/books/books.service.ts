@@ -8,7 +8,6 @@ import { Books, BooksDocument } from './schemas/books.schema'
 export class BooksService {
   constructor (
     @InjectModel(Books.name) private BooksModel: Model<BooksDocument>,
-    @InjectConnection() private connection: Connection
   ) {  }
 
   findAll (): Promise<BooksDocument[]> {
@@ -16,11 +15,10 @@ export class BooksService {
   }
 
   create (data: CreateBooksDto): Promise<BooksDocument> {
-    const book = new this.BooksModel(data)
-    return book.save()
+    return this.BooksModel.create(data)
   }
 
-  update (id: string, data: CreateBooksDto): Promise<BooksDocument> {
+  async update (id: string, data: CreateBooksDto): Promise<BooksDocument> {
     return this.BooksModel.findOneAndUpdate({ _id: id }, data).exec()
   }
 
