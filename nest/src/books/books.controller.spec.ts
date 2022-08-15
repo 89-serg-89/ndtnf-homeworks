@@ -4,6 +4,8 @@ import { Test } from '@nestjs/testing'
 import { BooksModule } from './books.module'
 import { BooksService } from './books.service'
 
+jest.setTimeout(10000)
+
 describe('BooksController', () => {
   let app: INestApplication
   let booksService = {
@@ -30,14 +32,14 @@ describe('BooksController', () => {
 
   it ('Get /books', () => {
     return request(app.getHttpServer())
-      .get('/books')
+      .get('/api/books')
       .expect(200)
       .expect({
         data: booksService.findAll()
       })
+  })
 
-    afterAll(async () => {
-      await app.close()
-    })
+  afterAll(async () => {
+    await app.close()
   })
 })
