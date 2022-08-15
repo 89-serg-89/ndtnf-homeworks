@@ -45,7 +45,7 @@ describe ('BooksService', () => {
       ]
     }).compile()
 
-    booksService = await moduleRef.resolve<BooksService>(BooksService)
+    booksService = moduleRef.get<BooksService>(BooksService)
     model = moduleRef.get<Model<Books>>(getModelToken(Books.name))
   })
 

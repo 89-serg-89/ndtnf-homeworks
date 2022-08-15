@@ -3,8 +3,9 @@ import { INestApplication } from '@nestjs/common'
 import { Test } from '@nestjs/testing'
 import { BooksModule } from './books.module'
 import { BooksService } from './books.service'
-
-jest.setTimeout(10000)
+import { getModelToken, MongooseModule } from '@nestjs/mongoose'
+import { Books } from './schemas/books.schema'
+import mongoose from 'mongoose'
 
 describe('BooksController', () => {
   let app: INestApplication
@@ -19,27 +20,37 @@ describe('BooksController', () => {
   beforeAll (async () => {
     const moduleRef = await Test.createTestingModule({
       imports: [
+        // MongooseModule.forRoot('mongodb://localhost:27017/nest-netology'),
         BooksModule
+      ],
+      providers: [
+        BooksService,
+        {
+          provide: getModelToken(Books.name),
+          useValue: booksService
+        }
       ]
-    })
-      .overrideProvider(BooksService)
-      .useValue(booksService)
-      .compile()
+    }).compile()
 
     app = moduleRef.createNestApplication()
     await app.init()
   })
 
-  it ('Get /books', () => {
-    return request(app.getHttpServer())
-      .get('/api/books')
-      .expect(200)
-      .expect({
-        data: booksService.findAll()
-      })
+  it ('Get /books', async () => {
+    try {
+      request(app.getHttpServer())
+        .get('/api/books')
+        .expect(200)
+        .expect({
+          data: booksService.findAll()
+        })
+    } catch (e) {
+      console.log(e)
+    }
   })
 
   afterAll(async () => {
+    await mongoose.connection.close()
     await app.close()
   })
 })
