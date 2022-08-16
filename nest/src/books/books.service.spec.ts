@@ -10,24 +10,24 @@ const mockBook = {
   description: 'description'
 }
 
+const booksArray = [
+  {
+    _id: '62ed1ffc91e8eb901830b94d',
+    title: 'test',
+    description: 'description',
+    favorite: false
+  },
+  {
+    _id: '62f7b9da6d2ca3f23005ad79',
+    title: 'test1',
+    description: 'description1',
+    favorite: false
+  }
+]
+
 describe ('BooksService', () => {
   let booksService: BooksService
   let model: Model<Books>
-
-  const booksArray = [
-    {
-      _id: '62ed1ffc91e8eb901830b94d',
-      title: 'test',
-      description: 'description',
-      favorite: false
-    },
-    {
-      _id: '62f7b9da6d2ca3f23005ad79',
-      title: 'test1',
-      description: 'description1',
-      favorite: false
-    }
-  ]
 
   beforeEach (async () => {
     const moduleRef: TestingModule = await Test.createTestingModule({
