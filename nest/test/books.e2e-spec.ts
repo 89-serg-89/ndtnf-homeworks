@@ -7,7 +7,7 @@ import { BooksService } from '../src/books/books.service'
 
 describe('BooksController', () => {
   let app: INestApplication
-  let booksService = {
+  const booksService = {
     findAll: () => [{
       id: '62ed1ffc91e8eb901830b94d',
       title: 'jest test book',
